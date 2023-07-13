@@ -1,23 +1,18 @@
-import styled from 'styled-components';
-
-const StyledButton = styled.button`
-  display: flex;
-  flex-direction: row;
-  padding: 0.5em 1em;
-  margin: 1em;
-  margin-right: 50px;
-  color: #fff;
-  background-color: #333;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #777;
+import { useSession, signIn, signOut } from 'next-auth/react';
+export default function Component() {
+  const { data: session } = useSession();
+  if (session) {
+    return (
+      <>
+        Signed in as {session.user.email} <br />
+        <button onClick={() => signOut()}>Sign out</button>
+      </>
+    );
   }
-`;
-
-export default function Button({ children, onClick }) {
-  return <StyledButton onClick={onClick}>{children}</StyledButton>;
+  return (
+    <>
+      Not signed in <br />
+      <button onClick={() => signIn()}>Sign in</button>
+    </>
+  );
 }
