@@ -1,5 +1,5 @@
 const prisma = require('../../../lib/prisma');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 async function post(request) {
   const body = await request.json();
