@@ -1,45 +1,57 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import GithubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
+import FacebookProvider from 'next-auth/providers/facebook';
 
-export const authOptions = {
+export const authConfig = {
   // Configure one or more authentication providers
   providers: [
     CredentialsProvider({
-      name: 'Sign in',
+      // The name to display on the sign in form (e.g. "Sign in with...")
+      name: 'Credentials',
+      // `credentials` is used to generate a form on the sign in page.
+      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        email: {
-          label: 'Email',
-          type: 'email',
-          placeholder: 'example@example.com',
-        },
+        username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
-        if (!credentials || !credentials.email || !credentials.password) {
-          return null;
-        }
-        const dbUser = await prisma.user.findFirst({
-          where: { email: credentials.email },
+      async authorize(credentials, req) {
+        // Add logic here to look up the user from the credentials supplied
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: credentials?.username,
+            password: credentials?.password,
+          }),
         });
-        if (dbUser && dbUser.password === credentials.password) {
-          const { password, createdAt, id, ...dbUserWithoutPassword } = dbUser;
-          return dbUserWithoutPassword;
+
+        const user = await res.json();
+
+        if (user) {
+          // Any object returned will be saved in `user` property of the JWT
+          return user;
+        } else {
+          // If you return null then an error will be displayed advising the user to check their details.
+          return null;
+
+          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
         }
-        return null;
       },
     }),
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
+
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+    }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
     // ...add more providers here
   ],
 };
 
-export default NextAuth(authOptions);
+export default NextAuth(authConfig);
