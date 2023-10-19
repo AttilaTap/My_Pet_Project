@@ -11,7 +11,7 @@ export default function Home({ posts }) {
   return (
     <div>
       <Head>
-        <title>My own 9GAG with black jack and hookers</title>
+        <title>My own 9GAG</title>
         <link
           rel='icon'
           href='/favicon.ico'

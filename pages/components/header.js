@@ -33,7 +33,7 @@ export default function Header() {
   return (
     <StyledHeader>
       <FakeActionsContainer />
-      <Title>Welcome to my 9GAG with blackjack and hookers</Title>
+      <Title>Welcome to my 9GAG</Title>
       <ActionsContainer>
         <UserIcon />
         <Button>Create Post</Button>
